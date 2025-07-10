@@ -15,7 +15,7 @@ async function printAltcoins(settings: Settings) {
 
 async function checkHistory(settings: Settings) {
     const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
-    const profits = await pricesCalculator.calculateProfits(altcoins, settings.buyDate, settings.sellDate)
+    const profits = await pricesCalculator.calculateProfits(altcoins, settings.checkHistoryStartDate, settings.checkHistoryEndDate)
 
     console.log("*****")
     profits.profits.forEach(x => console.log(
