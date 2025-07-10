@@ -43,23 +43,27 @@ async function trackPrice(settings: Settings) {
     const altcoins = await altcoinIndex.getAltcoins(settings.buyDate, settings.altcoinsCount)
 
     const innerTrackPrice = async () => {
-        const profits = await pricesCalculator
-            .calculateProfits(altcoins, settings.trackPriceStartDate, new Date().getTime())
+        try {
+            const profits = await pricesCalculator
+                .calculateProfits(altcoins, settings.trackPriceStartDate, new Date().getTime())
 
-        console.log("*****")
-        profits.profits.forEach(x => console.log(
-            x.altcoin.symbol, "-",
-            "profit:", x.profit, "%,",
-            "max price fall", x.maxPriceFall, "%"
-        ))
+            console.log("*****")
+            profits.profits.forEach(x => console.log(
+                x.altcoin.symbol, "-",
+                "profit:", x.profit, "%,",
+                "max price fall", x.maxPriceFall, "%"
+            ))
 
-        console.log("*****")
-        console.log(
-            "Total profit:", profits.profit, "%,",
-            "max price fall:", profits.maxPriceFall, "%"
-        )
+            console.log("*****")
+            console.log(
+                "Total profit:", profits.profit, "%,",
+                "max price fall:", profits.maxPriceFall, "%"
+            )
 
-        await telegram.sendMessage(`Current profit ${profits.profit}%`)
+            await telegram.sendMessage(`Current profit ${profits.profit}%`)
+        } catch (ex) {
+            console.error(ex)
+        }
     }
 
     const intervalMs = settings.trackPriceIntervalHours * 60 * 60 * 1000
