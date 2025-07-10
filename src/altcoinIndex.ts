@@ -19,10 +19,9 @@ async function getAltcoins(): Promise<Altcoin[]> {
 
     for (let i = 0; i < symbols.length; i++) {
         const symbol = symbols[i].symbol
-        const candles = await bybit.getCandles(symbol, "D", start - weekMs)
 
-        const hasCandles = !!candles.filter(x => x.date < start).length
-        if (!hasCandles) {
+        const candles = await bybit.getCandles(symbol, "D", start, start + weekMs)
+        if (!candles.length) {
             continue
         }
 

@@ -35,7 +35,7 @@ async function getSymbols(): Promise<Symbol[]> {
         .filter(x => !x.symbol.startsWith("DAI"))
 }
 
-async function getCandles(symbol: string, interval: KlineIntervalV3, start: number): Promise<Candle[]> {
+async function getCandles(symbol: string, interval: KlineIntervalV3, start: number, end: number): Promise<Candle[]> {
     const client = getClient()
     const limit = 1000
     const maxPages = 300
@@ -46,6 +46,7 @@ async function getCandles(symbol: string, interval: KlineIntervalV3, start: numb
             symbol,
             interval,
             start: date,
+            end,
             limit,
         })
 
@@ -63,6 +64,9 @@ async function getCandles(symbol: string, interval: KlineIntervalV3, start: numb
 
     for (let i = 0; i < maxPages; i++) {
         const newCandles = await get(date)
+        if (!newCandles.length) {
+            break
+        }
 
         candles = [...candles, ...newCandles]
         date = newCandles[0].date + 1
