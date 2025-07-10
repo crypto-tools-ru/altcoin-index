@@ -14,17 +14,15 @@ interface Profits {
     maxPriceFall: number,
 }
 
-async function calculateProfits(altcoins: Altcoin[]): Promise<Profits> {
-    console.log("Start calculate profits")
+async function calculateProfits(altcoins: Altcoin[], start: number, end: number): Promise<Profits> {
+    console.log(new Date(), "Start calculate profits")
 
-    const buyDate = Date.parse(process.env.buyDate!)
-    const sellDate = Date.parse(process.env.sellDate!)
     let profits: Profit[] = []
 
     for (let i = 0; i < altcoins.length; i++) {
         const altcoin = altcoins[i]
 
-        const candles = await bybit.getCandles(altcoin.symbol, "D", buyDate, sellDate)
+        const candles = await bybit.getCandles(altcoin.symbol, "D", start, end)
 
         const buyPrice = candles[candles.length - 1].close
         const sellPrice = candles[0].close

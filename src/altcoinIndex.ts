@@ -7,12 +7,10 @@ export interface Altcoin {
 
 const weekMs = 7 * 24 * 60 * 60 * 1000
 
-async function getAltcoins(): Promise<Altcoin[]> {
-    console.log("Start load altcoins")
-    
+async function getAltcoins(start: number, altcoinsCount: number): Promise<Altcoin[]> {
+    console.log(new Date(), "Start load altcoins")
+
     const altcoins: Altcoin[] = []
-    const start = Date.parse(process.env.buyDate!)
-    const altcoinsCount = parseInt(process.env.altcoinsCount!)
 
     const symbols = Enumerable.from(await bybit.getSymbols())
         .where(x => x.symbol !== "BTCUSDT")

@@ -1,5 +1,6 @@
 import { APIResponseV3WithTime, KlineIntervalV3, RestClientV5 } from "bybit-api"
 import Enumerable from "linq"
+import { Settings } from "./settings"
 
 export interface Symbol {
     symbol: string,
@@ -13,11 +14,19 @@ export interface Candle {
 }
 
 const category = "spot"
+let client: RestClientV5 | null = null
+
+function init(settings: Settings) {
+    client = new RestClientV5({
+        key: settings.bybitApiKeyPublic,
+        secret: settings.bybitApiKeyPrivate,
+        recv_window: 100000000,
+        baseUrl: "https://api.bybit.com",
+    })
+}
 
 async function getSymbols(): Promise<Symbol[]> {
-    const client = getClient()
-
-    const response = await client.getTickers({
+    const response = await client!.getTickers({
         category,
     })
 
@@ -33,15 +42,15 @@ async function getSymbols(): Promise<Symbol[]> {
         .filter(x => x.symbol.endsWith("USDT"))
         .filter(x => !x.symbol.startsWith("USDC"))
         .filter(x => !x.symbol.startsWith("DAI"))
+        .filter(x => !x.symbol.startsWith("USDE"))
 }
 
 async function getCandles(symbol: string, interval: KlineIntervalV3, start: number, end: number): Promise<Candle[]> {
-    const client = getClient()
     const limit = 1000
     const maxPages = 300
 
     const get = async (date: number): Promise<Candle[]> => {
-        const response = await client.getKline({
+        const response = await client!.getKline({
             category,
             symbol,
             interval,
@@ -84,21 +93,6 @@ async function getCandles(symbol: string, interval: KlineIntervalV3, start: numb
         .toArray()
 }
 
-let currentClient: RestClientV5 | null = null
-
-function getClient() {
-    if (!currentClient) {
-        currentClient = new RestClientV5({
-            key: process.env.bybitApiKeyPublic,
-            secret: process.env.bybitApiKeyPrivate,
-            recv_window: 100000000,
-            baseUrl: "https://api.bybit.com",
-        })
-    }
-
-    return currentClient
-}
-
 function ensureResponseOk<T>(response: APIResponseV3WithTime<T>) {
     if (response.retCode !== 0) {
         console.log(response)
@@ -111,6 +105,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 export const bybit = {
+    init,
     getSymbols,
     getCandles,
 }
