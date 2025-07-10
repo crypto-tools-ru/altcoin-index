@@ -1,6 +1,7 @@
 export interface Settings {
     strategy: string,
     altcoinsCount: number,
+    altcoinsCheckDate: number,
     buyDate: number,
     sellDate: number,
     trackPriceStartDate: number,
@@ -15,6 +16,7 @@ function get(): Settings {
     return {
         strategy: process.env.strategy!,
         altcoinsCount: parseInt(process.env.altcoinsCount!),
+        altcoinsCheckDate: Date.parse(process.env.altcoinsCheckDate!),
         buyDate: Date.parse(process.env.buyDate!),
         sellDate: Date.parse(process.env.sellDate!),
         trackPriceStartDate: Date.parse(process.env.trackPriceStartDate!),

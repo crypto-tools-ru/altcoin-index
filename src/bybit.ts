@@ -84,7 +84,7 @@ async function getCandles(symbol: string, interval: KlineIntervalV3, start: numb
             break
         }
 
-        await sleep(50)
+        await sleep(100)
     }
 
     return Enumerable.from(candles)

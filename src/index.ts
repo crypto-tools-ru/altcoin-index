@@ -7,14 +7,14 @@ import { telegram } from "./telegram"
 require("dotenv").config()
 
 async function printAltcoins(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.buyDate, settings.altcoinsCount)
+    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
 
     console.log("*****")
     altcoins.forEach(altcoin => console.log(altcoin.symbol))
 }
 
 async function checkHistory(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.buyDate, settings.altcoinsCount)
+    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
     const profits = await pricesCalculator.calculateProfits(altcoins, settings.buyDate, settings.sellDate)
 
     console.log("*****")
@@ -40,7 +40,7 @@ async function sell(settings: Settings) {
 }
 
 async function trackPrice(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.buyDate, settings.altcoinsCount)
+    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
 
     const innerTrackPrice = async () => {
         try {
@@ -79,11 +79,11 @@ async function main() {
     console.log(new Date(), "Start work", settings.strategy)
 
     switch (settings.strategy) {
-        case "printAltcoins": await printAltcoins(settings)
-        case "checkHistory": await checkHistory(settings)
-        case "buy": await buy(settings)
-        case "sell": await sell(settings)
-        case "trackPrice": await trackPrice(settings)
+        case "printAltcoins": return await printAltcoins(settings)
+        case "checkHistory": return await checkHistory(settings)
+        case "buy": return await buy(settings)
+        case "sell": return await sell(settings)
+        case "trackPrice": return await trackPrice(settings)
     }
 }
 
