@@ -1,4 +1,5 @@
 import { altcoinIndex } from "./altcoinIndex"
+import { pricesCalculator } from "./pricesCalculator"
 
 require("dotenv").config()
 
@@ -6,11 +7,27 @@ console.log(new Date(), "Start work", process.env.strategy)
 
 async function printAltcoins() {
     const altcoins = await altcoinIndex.getAltcoins()
+
+    console.log("*****")
     altcoins.forEach(altcoin => console.log(altcoin.symbol))
 }
 
 async function checkHistory() {
+    const altcoins = await altcoinIndex.getAltcoins()
+    const profits = await pricesCalculator.calculateProfits(altcoins)
 
+    console.log("*****")
+    profits.profits.forEach(x => console.log(
+        x.altcoin.symbol, "-",
+        "profit:", x.profit, "%,",
+        "max price fall", x.maxPriceFall, "%"
+    ))
+
+    console.log("*****")
+    console.log(
+        "Total profit:", profits.profit, "%,",
+        "max price fall:", profits.maxPriceFall, "%"
+    )
 }
 
 async function buy() {
