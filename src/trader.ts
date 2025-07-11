@@ -49,6 +49,8 @@ async function sell(symbols: Symbol[]) {
 }
 
 async function getAssets(): Promise<Symbol[]> {
+    console.log(new Date(), "Start load assets")
+   
     return (await bybit.getAssets())
         .map(x => ({ symbol: x.symbol, turnover24h: 0 }))
 }
