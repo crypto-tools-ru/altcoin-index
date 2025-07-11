@@ -80,7 +80,10 @@ async function setMargin(symbol: string, margin: number) {
 
     const coin = symbol.substring(0, symbol.indexOf("USDT"))
     ensureResponseOk(
-        await client!.setCollateralCoin({ coin, collateralSwitch: "ON", })
+        await client!.setCollateralCoin({
+            coin,
+            collateralSwitch: margin === 1 ? "OFF" : "ON",
+        })
     )
 }
 
