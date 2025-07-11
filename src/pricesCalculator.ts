@@ -1,9 +1,8 @@
 import Enumerable from "linq";
-import { Altcoin } from "./altcoinIndex";
-import { bybit } from "./bybit";
+import { bybit, Symbol } from "./bybit";
 
 interface Profit {
-    altcoin: Altcoin,
+    altcoin: Symbol,
     profit: number,
     maxPriceFall: number,
 }
@@ -14,7 +13,7 @@ interface Profits {
     maxPriceFall: number,
 }
 
-async function calculateProfits(altcoins: Altcoin[], start: number, end: number): Promise<Profits> {
+async function calculateProfits(altcoins: Symbol[], start: number, end: number): Promise<Profits> {
     console.log(new Date(), "Start calculate profits")
 
     let profits: Profit[] = []

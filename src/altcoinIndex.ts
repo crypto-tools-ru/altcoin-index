@@ -1,16 +1,12 @@
 import Enumerable from "linq"
-import { bybit } from "./bybit"
-
-export interface Altcoin {
-    symbol: string,
-}
+import { bybit, Symbol } from "./bybit"
 
 const weekMs = 7 * 24 * 60 * 60 * 1000
 
-async function getAltcoins(start: number, altcoinsCount: number): Promise<Altcoin[]> {
+async function getAltcoins(start: number, altcoinsCount: number): Promise<Symbol[]> {
     console.log(new Date(), "Start load altcoins")
 
-    const altcoins: Altcoin[] = []
+    const altcoins: Symbol[] = []
 
     const symbols = Enumerable.from(await bybit.getSymbols())
         .where(x => x.symbol !== "BTCUSDT")
@@ -18,14 +14,14 @@ async function getAltcoins(start: number, altcoinsCount: number): Promise<Altcoi
         .toArray()
 
     for (let i = 0; i < symbols.length; i++) {
-        const symbol = symbols[i].symbol
+        const symbol = symbols[i]
 
-        const candles = await bybit.getCandles(symbol, "D", start, start + weekMs)
+        const candles = await bybit.getCandles(symbol.symbol, "D", start, start + weekMs)
         if (!candles.length) {
             continue
         }
 
-        altcoins.push({ symbol })
+        altcoins.push(symbol)
         if (altcoins.length >= altcoinsCount) {
             break
         }
