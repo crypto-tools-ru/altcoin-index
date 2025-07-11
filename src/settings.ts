@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 export interface Settings {
     strategy: string,
     altcoinsCount: number,

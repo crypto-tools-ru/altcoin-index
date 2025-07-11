@@ -4,8 +4,6 @@ import { pricesCalculator } from "./pricesCalculator"
 import { settings as settingsProvider, Settings } from "./settings"
 import { telegram } from "./telegram"
 
-require("dotenv").config()
-
 async function printAltcoins(settings: Settings) {
     const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
 
