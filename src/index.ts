@@ -1,6 +1,6 @@
 import { altcoinIndex } from "./altcoinIndex"
 import { bybit } from "./bybit"
-import { positionsManager } from "./positionsManager"
+import { trader } from "./trader"
 import { pricesCalculator } from "./pricesCalculator"
 import { settings as settingsProvider, Settings } from "./settings"
 import { telegram } from "./telegram"
@@ -32,18 +32,18 @@ async function checkHistory(settings: Settings) {
 
 async function buy(settings: Settings) {
     const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
-    await positionsManager.buy(altcoins, settings.buyBudget, settings.buyMargin, settings.buyIsTrade)
+    await trader.buy(altcoins, settings.buyBudget, settings.buyMargin, settings.buyIsTrade)
 }
 
 async function sell() {
-    const assets = await positionsManager.getAssets()
-    await positionsManager.sell(assets)
+    const assets = await trader.getAssets()
+    await trader.sell(assets)
 }
 
 async function trackPrice(settings: Settings) {
     const altcoins = settings.trackPriceType === "index"
         ? await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
-        : await positionsManager.getAssets()
+        : await trader.getAssets()
 
     const innerTrackPrice = async () => {
         try {

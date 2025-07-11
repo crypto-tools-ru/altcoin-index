@@ -59,7 +59,7 @@ function round(value: number, step: number) {
     )
 }
 
-export const positionsManager = {
+export const trader = {
     buy,
     sell,
     getAssets,
