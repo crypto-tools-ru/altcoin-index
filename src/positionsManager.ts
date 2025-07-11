@@ -1,4 +1,4 @@
-import { bybit, Position, Symbol } from "./bybit";
+import { bybit, Symbol } from "./bybit";
 
 const minBudget = 5
 const upPrice = 1.01

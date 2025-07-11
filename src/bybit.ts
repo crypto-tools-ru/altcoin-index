@@ -67,7 +67,7 @@ async function getSymbolInfos(): Promise<SymbolInfo[]> {
 
     return response.result.list.map(x => ({
         symbol: x.symbol,
-        countStep: parseFloat(x.lotSizeFilter.quotePrecision),
+        countStep: parseFloat(x.lotSizeFilter.basePrecision),
         priceStep: parseFloat(x.priceFilter.tickSize),
     }))
 }
