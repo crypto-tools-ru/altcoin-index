@@ -19,8 +19,9 @@ export interface Candle {
     close: number,
 }
 
-export interface Position {
+export interface Asset {
     symbol: string,
+    size: number,
 }
 
 const category = "spot"
@@ -151,33 +152,35 @@ async function buyLimit(symbol: string, count: number, price: number) {
     ensureResponseOk(response)
 }
 
-async function closeBuy(symbol: string) {
+async function sellLimit(symbol: string, count: number, price: number) {
     const response = await client!.submitOrder({
         category,
         symbol,
         side: "Sell",
-        orderType: "Market",
-        qty: "0",
-        reduceOnly: true,
-        closeOnTrigger: true,
+        orderType: "Limit",
+        qty: count.toFixed(12),
+        price: price.toFixed(12),
     })
 
     ensureResponseOk(response)
 }
 
-async function getPositions(): Promise<Position[]> {
-    const response = await client!.getPositionInfo({
-        category,
-        settleCoin: "USDT",
-        limit: 200,
+async function getAssets(): Promise<Asset[]> {
+    const response = await client!.getWalletBalance({
+        accountType: "UNIFIED",
     })
 
     ensureResponseOk(response)
 
     return response
         .result
-        .list
-        .map(x => ({ symbol: x.symbol, }))
+        .list[0]
+        .coin
+        .filter(x => x.coin !== "USDT")
+        .map(x => ({
+            symbol: `${x.coin}USDT`,
+            size: parseFloat(x.walletBalance),
+        }))
 }
 
 function ensureResponseOk<T>(response: APIResponseV3WithTime<T>) {
@@ -199,6 +202,6 @@ export const bybit = {
     getPrice,
     getCandles,
     buyLimit,
-    closeBuy,
-    getPositions,
+    sellLimit,
+    getAssets,
 }

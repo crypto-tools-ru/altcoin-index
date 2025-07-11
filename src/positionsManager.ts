@@ -2,6 +2,7 @@ import { bybit, Symbol } from "./bybit";
 
 const minBudget = 5
 const upPrice = 1.01
+const downPrice = 0.99
 
 async function buy(symbols: Symbol[], budget: number, margin: number, isTrade: boolean) {
     console.log(new Date(), "Start buy")
@@ -30,16 +31,25 @@ async function buy(symbols: Symbol[], budget: number, margin: number, isTrade: b
 async function sell(symbols: Symbol[]) {
     console.log(new Date(), "Start sell")
 
+    const symbolInfos = await bybit.getSymbolInfos()
+    const assets = await bybit.getAssets()
+
     for (let i = 0; i < symbols.length; i++) {
         const symbol = symbols[i].symbol
+        const symbolInfo = symbolInfos.find(x => x.symbol === symbol)!
+        const asset = assets.find(x => x.symbol === symbol)!
+        const currentPrice = await bybit.getPrice(symbol)
 
-        await bybit.closeBuy(symbol)
-        console.log("Sell", symbol)
+        const price = round(currentPrice * downPrice, symbolInfo.priceStep)
+        const count = round(asset.size, symbolInfo.countStep)
+
+        await bybit.sellLimit(symbol, count, price)
+        console.log("Sell", symbol, "price", price, "count", count)
     }
 }
 
-async function getPositions(): Promise<Symbol[]> {
-    return (await bybit.getPositions())
+async function getAssets(): Promise<Symbol[]> {
+    return (await bybit.getAssets())
         .map(x => ({ symbol: x.symbol, turnover24h: 0 }))
 }
 
@@ -52,5 +62,5 @@ function round(value: number, step: number) {
 export const positionsManager = {
     buy,
     sell,
-    getPositions,
+    getAssets,
 }

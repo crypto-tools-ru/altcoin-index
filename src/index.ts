@@ -36,14 +36,14 @@ async function buy(settings: Settings) {
 }
 
 async function sell() {
-    const positions = await positionsManager.getPositions()
-    await positionsManager.sell(positions)
+    const assets = await positionsManager.getAssets()
+    await positionsManager.sell(assets)
 }
 
 async function trackPrice(settings: Settings) {
-    const altcoins = settings.tractPriceType === "index"
+    const altcoins = settings.trackPriceType === "index"
         ? await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
-        : await positionsManager.getPositions()
+        : await positionsManager.getAssets()
 
     const innerTrackPrice = async () => {
         try {
