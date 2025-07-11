@@ -11,7 +11,7 @@ export interface Settings {
 
     trackPriceStartDate: number,
     trackPriceIntervalHours: number,
-    trackPriceType: "positions" | "index",
+    trackPriceType: "assets" | "index",
 
     buyBudget: number,
     buyMargin: number,
@@ -35,7 +35,7 @@ function get(): Settings {
 
         trackPriceStartDate: Date.parse(process.env.trackPriceStartDate!),
         trackPriceIntervalHours: parseInt(process.env.trackPriceIntervalHours!),
-        trackPriceType: process.env.trackPriceType!.toLowerCase() === "positions" ? "positions" : "index",
+        trackPriceType: process.env.trackPriceType!.toLowerCase() === "assets" ? "assets" : "index",
 
         buyBudget: parseInt(process.env.buyBudget!),
         buyMargin: parseInt(process.env.buyMargin!),
