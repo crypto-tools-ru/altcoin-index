@@ -1,5 +1,6 @@
 import { altcoinIndex } from "./altcoinIndex"
 import { bybit } from "./bybit"
+import { positionsManager } from "./positionsManager"
 import { pricesCalculator } from "./pricesCalculator"
 import { settings as settingsProvider, Settings } from "./settings"
 import { telegram } from "./telegram"
@@ -30,15 +31,19 @@ async function checkHistory(settings: Settings) {
 }
 
 async function buy(settings: Settings) {
-
+    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
+    await positionsManager.buy(altcoins, settings.buyBudget, settings.buyMargin, settings.buyIsTrade)
 }
 
-async function sell(settings: Settings) {
-
+async function sell() {
+    const positions = await positionsManager.getPositions()
+    await positionsManager.sell(positions)
 }
 
 async function trackPrice(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
+    const altcoins = settings.tractPriceType === "index"
+        ? await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
+        : await positionsManager.getPositions()
 
     const innerTrackPrice = async () => {
         try {
@@ -80,7 +85,7 @@ async function main() {
         case "printAltcoins": return await printAltcoins(settings)
         case "checkHistory": return await checkHistory(settings)
         case "buy": return await buy(settings)
-        case "sell": return await sell(settings)
+        case "sell": return await sell()
         case "trackPrice": return await trackPrice(settings)
     }
 }

@@ -7,13 +7,25 @@ export interface Symbol {
     turnover24h: number,
 }
 
+export interface SymbolInfo {
+    symbol: string,
+    countStep: number,
+    priceStep: number,
+}
+
 export interface Candle {
     symbol: string,
     date: number,
     close: number,
 }
 
+export interface Position {
+    symbol: string,
+}
+
 const category = "spot"
+const hourMs = 60 * 60 * 1000
+
 let client: RestClientV5 | null = null
 
 function init(settings: Settings) {
@@ -43,6 +55,38 @@ async function getSymbols(): Promise<Symbol[]> {
         .filter(x => !x.symbol.startsWith("USDC"))
         .filter(x => !x.symbol.startsWith("DAI"))
         .filter(x => !x.symbol.startsWith("USDE"))
+}
+
+async function getSymbolInfos(): Promise<SymbolInfo[]> {
+    const response = await client!.getInstrumentsInfo({
+        category,
+        limit: 1000,
+    })
+
+    ensureResponseOk(response)
+
+    return response.result.list.map(x => ({
+        symbol: x.symbol,
+        countStep: parseFloat(x.lotSizeFilter.quotePrecision),
+        priceStep: parseFloat(x.priceFilter.tickSize),
+    }))
+}
+
+async function setMargin(symbol: string, margin: number) {
+    ensureResponseOk(
+        await client!.setSpotMarginLeverage(margin.toString())
+    )
+
+    const coin = symbol.substring(0, symbol.indexOf("USDT"))
+    ensureResponseOk(
+        await client!.setCollateralCoin({ coin, collateralSwitch: "ON", })
+    )
+}
+
+async function getPrice(symbol: string) {
+    const start = new Date().getTime() - hourMs
+    const end = new Date().getTime()
+    return (await bybit.getCandles(symbol, "1", start, end))[0].close
 }
 
 async function getCandles(symbol: string, interval: KlineIntervalV3, start: number, end: number): Promise<Candle[]> {
@@ -93,6 +137,49 @@ async function getCandles(symbol: string, interval: KlineIntervalV3, start: numb
         .toArray()
 }
 
+async function buyLimit(symbol: string, count: number, price: number) {
+    const response = await client!.submitOrder({
+        category,
+        symbol,
+        side: "Buy",
+        orderType: "Limit",
+        price: price.toFixed(12),
+        qty: count.toFixed(12),
+        isLeverage: 1,
+    })
+
+    ensureResponseOk(response)
+}
+
+async function closeBuy(symbol: string) {
+    const response = await client!.submitOrder({
+        category,
+        symbol,
+        side: "Sell",
+        orderType: "Market",
+        qty: "0",
+        reduceOnly: true,
+        closeOnTrigger: true,
+    })
+
+    ensureResponseOk(response)
+}
+
+async function getPositions(): Promise<Position[]> {
+    const response = await client!.getPositionInfo({
+        category,
+        settleCoin: "USDT",
+        limit: 200,
+    })
+
+    ensureResponseOk(response)
+
+    return response
+        .result
+        .list
+        .map(x => ({ symbol: x.symbol, }))
+}
+
 function ensureResponseOk<T>(response: APIResponseV3WithTime<T>) {
     if (response.retCode !== 0) {
         console.log(response)
@@ -107,5 +194,11 @@ function sleep(ms: number): Promise<void> {
 export const bybit = {
     init,
     getSymbols,
+    getSymbolInfos,
+    setMargin,
+    getPrice,
     getCandles,
+    buyLimit,
+    closeBuy,
+    getPositions,
 }
