@@ -12,24 +12,6 @@ async function printAltcoins(settings: Settings) {
     altcoins.forEach(altcoin => console.log(altcoin.symbol))
 }
 
-async function checkHistory(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
-    const profits = await pricesCalculator.calculateProfits(altcoins, settings.checkHistoryStartDate, settings.checkHistoryEndDate)
-
-    console.log("*****")
-    profits.profits.forEach(x => console.log(
-        x.altcoin.symbol, "-",
-        "profit:", x.profit, "%,",
-        "max price fall", x.maxPriceFall, "%"
-    ))
-
-    console.log("*****")
-    console.log(
-        "Total profit:", profits.profit, "%,",
-        "max price fall:", profits.maxPriceFall, "%"
-    )
-}
-
 async function buy(settings: Settings) {
     const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
     await trader.buy(altcoins, settings.buyBudget, settings.buyMargin, settings.buyIsTrade)
@@ -51,17 +33,10 @@ async function trackPrice(settings: Settings) {
                 .calculateProfits(altcoins, settings.trackPriceStartDate, new Date().getTime())
 
             console.log("*****")
-            profits.profits.forEach(x => console.log(
-                x.altcoin.symbol, "-",
-                "profit:", x.profit, "%,",
-                "max price fall", x.maxPriceFall, "%"
-            ))
+            profits.profits.forEach(x => console.log(x.altcoin.symbol, "-", "profit:", x.profit, "%,"))
 
             console.log("*****")
-            console.log(
-                "Total profit:", profits.profit, "%,",
-                "max price fall:", profits.maxPriceFall, "%"
-            )
+            console.log("Total profit:", profits.profit, "%,", "max price fall:")
 
             await telegram.sendMessage(`Current profit ${profits.profit}%`)
         } catch (ex) {
@@ -83,7 +58,6 @@ async function main() {
 
     switch (settings.strategy) {
         case "printAltcoins": return await printAltcoins(settings)
-        case "checkHistory": return await checkHistory(settings)
         case "buy": return await buy(settings)
         case "sell": return await sell()
         case "trackPrice": return await trackPrice(settings)
