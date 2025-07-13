@@ -23,18 +23,13 @@ async function calculateProfits(altcoins: Symbol[], start: number, end: number):
 
         const buyPrice = candles[candles.length - 1].close
         const sellPrice = candles[0].close
-
-        const profit = round(
-            (sellPrice - buyPrice) / buyPrice * 100,
-        )
+        const profit = round((sellPrice - buyPrice) / buyPrice * 100)
 
         profits.push({ altcoin, profit })
     }
 
     profits = Enumerable.from(profits).orderByDescending(x => x.profit).toArray()
-    const profit = round(
-        Enumerable.from(profits).average(x => x.profit)
-    )
+    const profit = round(Enumerable.from(profits).average(x => x.profit))
 
     return { profits, profit }
 }
