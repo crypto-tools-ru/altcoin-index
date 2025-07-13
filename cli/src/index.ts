@@ -5,15 +5,26 @@ import { pricesCalculator } from "./pricesCalculator"
 import { settings as settingsProvider, Settings } from "./settings"
 import { telegram } from "./telegram"
 
-async function printAltcoins(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
+async function buildIndex(settings: Settings) {
+    if (altcoinIndex.tryRead()) {
+        console.error("Altcoin index already exists. Delete index before build")
+        return
+    }
+
+    const altcoins = await altcoinIndex.build(settings.altcoinsCheckDate, settings.altcoinsCount)
+    altcoinIndex.save(altcoins)
 
     console.log("*****")
     altcoins.forEach(altcoin => console.log(altcoin.symbol))
 }
 
 async function buy(settings: Settings) {
-    const altcoins = await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
+    const altcoins = altcoinIndex.tryRead()
+    if (!altcoins) {
+        console.error("Altcoin index not found. Build index before buy")
+        return
+    }
+
     await trader.buy(altcoins, settings.buyBudget, settings.buyMargin, settings.buyIsTrade)
 }
 
@@ -23,9 +34,11 @@ async function sell() {
 }
 
 async function trackPrice(settings: Settings) {
-    const altcoins = settings.trackPriceType === "index"
-        ? await altcoinIndex.getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
-        : await trader.getAssets()
+    const altcoins = altcoinIndex.tryRead()
+    if (!altcoins) {
+        console.error("Altcoin index not found. Build index before track price")
+        return
+    }
 
     const innerTrackPrice = async () => {
         try {
@@ -57,7 +70,7 @@ async function main() {
     console.log(new Date(), "Start work", settings.strategy)
 
     switch (settings.strategy) {
-        case "printAltcoins": return await printAltcoins(settings)
+        case "buildIndex": return await buildIndex(settings)
         case "buy": return await buy(settings)
         case "sell": return await sell()
         case "trackPrice": return await trackPrice(settings)

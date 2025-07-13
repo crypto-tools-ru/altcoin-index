@@ -6,12 +6,8 @@ export interface Settings {
     altcoinsCount: number,
     altcoinsCheckDate: number,
 
-    checkHistoryStartDate: number,
-    checkHistoryEndDate: number,
-
     trackPriceStartDate: number,
     trackPriceIntervalHours: number,
-    trackPriceType: "assets" | "index",
 
     buyBudget: number,
     buyMargin: number,
@@ -30,12 +26,8 @@ function get(): Settings {
         altcoinsCount: parseInt(process.env.altcoinsCount!),
         altcoinsCheckDate: Date.parse(process.env.altcoinsCheckDate!),
 
-        checkHistoryStartDate: Date.parse(process.env.checkHistoryStartDate!),
-        checkHistoryEndDate: Date.parse(process.env.checkHistoryEndDate!),
-
         trackPriceStartDate: Date.parse(process.env.trackPriceStartDate!),
         trackPriceIntervalHours: parseInt(process.env.trackPriceIntervalHours!),
-        trackPriceType: process.env.trackPriceType!.toLowerCase() === "assets" ? "assets" : "index",
 
         buyBudget: parseInt(process.env.buyBudget!),
         buyMargin: parseInt(process.env.buyMargin!),

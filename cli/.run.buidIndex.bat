@@ -1,4 +1,4 @@
 call git pull
 call npm install
-call npm run printAltcoins
+call npm run buildIndex
 pause
