@@ -1,42 +1,30 @@
 async function calculateProfits(altcoins, start, end) {
     console.log(new Date(), "Start calculate profits")
 
-    let profits = []
-
+    const profits = []
     for (let i = 0; i < altcoins.length; i++) {
         const symbol = altcoins[i].symbol
-
         const candles = await getCandles(symbol, "D", start, end)
-
         const buyPrice = candles[candles.length - 1].close
-        const series = []
 
-        for (let y = candles.length - 1; y >= 0; y--) {
-            const candle = candles[y]
-            const value = round((candle.close - buyPrice) / buyPrice * 100)
+        const series = []
+        candles.reverse().forEach(candle => {
             const time = formatDate(candle.date)
+            const value = round((candle.close - buyPrice) / buyPrice * 100)
 
             series.push({ time, value })
-        }
+        })
 
         profits.push({ symbol, series })
     }
 
-    const times = profits[0].series
     const series = []
+    profits[0].series.forEach(x => {
+        const time = x.time
+        const value = average(profits, x => x.series.find(x => x.time === time)?.value || 0)
 
-    for (let i = 0; i < times.length; i++) {
-        const time = times[i].time
-
-        const values = []
-        for (let y = 0; y < profits.length; y++) {
-            const value = profits[y].series.find(x => x.time === time)?.value || 0
-            values.push(value)
-        }
-
-        const value = average(values, x => x)
         series.push({ time, value })
-    }
+    })
 
     return { profits, series }
 }
