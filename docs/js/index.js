@@ -1,5 +1,12 @@
+function showChart(items) { // { time: '2019-04-11', value: 80.01 }
+    const chart = LightweightCharts.createChart(document.getElementById("altcoin-index-chart"), { height: 500 })
+    const lineSeries = chart.addSeries(LightweightCharts.LineSeries)
+    lineSeries.setData(items)
+}
+
 async function showIndex() {
     setHtml("altcoin-index-result", "")
+    setHtml("altcoin-index-chart", "")
 
     const settings = getSettings()
 
@@ -28,9 +35,10 @@ async function showIndex() {
     profits.profits.forEach(x => html += `<br/>${x.altcoin.symbol} - profit: ${x.profit}%, max price fall: ${x.maxPriceFall}%`)
 
     setHtml("altcoin-index-result", html)
+    showChart(profits.series)
 }
 
-async function altcoinIndex(id) {
+async function altcoinIndex() {
     try {
         setAttribute("show-altcoin-index", "disabled", "")
         setStyle("altcoin-index-loader", "display", "block")
