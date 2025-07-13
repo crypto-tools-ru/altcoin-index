@@ -4,18 +4,13 @@ async function calculateProfits(altcoins, start, end) {
     let profits = []
 
     for (let i = 0; i < altcoins.length; i++) {
-        const altcoin = altcoins[i]
+        const symbol = altcoins[i].symbol
 
-        const candles = await getCandles(altcoin.symbol, "D", start, end)
+        const candles = await getCandles(symbol, "D", start, end)
 
         const buyPrice = candles[candles.length - 1].close
-        const sellPrice = candles[0].close
-        const minPrice = min(candles, x => x.close)
-
-        const profit = round((sellPrice - buyPrice) / buyPrice * 100)
-        const maxPriceFall = round((minPrice - buyPrice) / buyPrice * 100)
-
         const series = []
+
         for (let y = candles.length - 1; y >= 0; y--) {
             const candle = candles[y]
             const value = round((candle.close - buyPrice) / buyPrice * 100)
@@ -24,15 +19,12 @@ async function calculateProfits(altcoins, start, end) {
             series.push({ time, value })
         }
 
-        profits.push({ altcoin, profit, maxPriceFall, series })
+        profits.push({ symbol, series })
     }
-
-    orderByDescending(profits, x => x.profit)
-    const profit = round(average(profits, x => x.profit))
-    const maxPriceFall = round(average(profits, x => x.maxPriceFall))
 
     const times = profits[0].series
     const series = []
+
     for (let i = 0; i < times.length; i++) {
         const time = times[i].time
 
@@ -42,11 +34,11 @@ async function calculateProfits(altcoins, start, end) {
             values.push(value)
         }
 
-        series.push({ time, value: average(values, x => x) })
-
+        const value = average(values, x => x)
+        series.push({ time, value })
     }
 
-    return { profits, profit, maxPriceFall, series }
+    return { profits, series }
 }
 
 function round(value) {
