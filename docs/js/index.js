@@ -1,12 +1,12 @@
 async function showIndex() {
-    document.getElementById("altcoin-index-result").innerHTML = ""
+    setHtml("altcoin-index-result", "")
 
     const settings = getSettings()
 
-    document.getElementById("altcoin-index-loader-status").innerText = "Построение индекса..."
+    setText("altcoin-index-loader-status", "Построение индекса...")
     const altcoins = await getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
 
-    document.getElementById("altcoin-index-loader-status").innerText = "Рассчет профита..."
+    setText("altcoin-index-loader-status", "Рассчет профита...")
     const profits = await calculateProfits(altcoins, settings.checkHistoryStartDate, settings.checkHistoryEndDate)
 
     console.log("*****")
@@ -27,19 +27,19 @@ async function showIndex() {
     html += `<b>Total profit:</b> ${profits.profit}%, max price fall: ${profits.maxPriceFall}%<br/>`
     profits.profits.forEach(x => html += `<br/>${x.altcoin.symbol} - profit: ${x.profit}%, max price fall: ${x.maxPriceFall}%`)
 
-    document.getElementById("altcoin-index-result").innerHTML = html
+    setHtml("altcoin-index-result", html)
 }
 
 async function altcoinIndex(id) {
     try {
-        document.getElementById("show-altcoin-index").setAttribute("disabled", "")
-        document.getElementById("altcoin-index-loader").style.display = "block"
+        setAttribute("show-altcoin-index", "disabled", "")
+        setStyle("altcoin-index-loader", "display", "block")
 
         await showIndex()
     } catch (ex) {
         console.error(ex)
     }
 
-    document.getElementById("show-altcoin-index").removeAttribute("disabled")
-    document.getElementById("altcoin-index-loader").style.display = "none"
+    removeAttribute("show-altcoin-index", "disabled")
+    setStyle("altcoin-index-loader", "display", "none")
 }
