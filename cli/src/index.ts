@@ -49,7 +49,7 @@ async function trackPrice(settings: Settings) {
             profits.profits.forEach(x => console.log(x.altcoin.symbol, "-", "profit:", x.profit, "%,"))
 
             console.log("*****")
-            console.log("Total profit:", profits.profit, "%,", "max price fall:")
+            console.log("Total profit:", profits.profit, "%,")
 
             await telegram.sendMessage(`Current profit ${profits.profit}%`)
         } catch (ex) {
