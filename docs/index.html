@@ -18,7 +18,7 @@
             <div class="col">
                 <div class="mb-3">
                     <label for="altcoinsCount" class="form-label">Количество токенов в индексе</label>
-                    <input type="text" class="form-control" id="altcoinsCount" value="50">
+                    <input type="text" class="form-control" id="altcoinsCount" value="10">
                 </div>
                 <div class="mb-3">
                     <label for="altcoinsCheckDate" class="form-label">Дата проверки альткоинов</label>
@@ -45,10 +45,14 @@
 
             <div id="altcoin-index-loader" class="my-4" style="display: none;">
                 <div class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%">
+                    <div id="altcoin-index-loader-status" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%">
                         Загрузка...
                     </div>
                 </div>
+            </div>
+
+            <div id="altcoin-index-result" class="my-4">
+
             </div>
         </div>
     </div>
