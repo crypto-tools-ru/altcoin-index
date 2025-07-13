@@ -1,4 +1,4 @@
-async function showIndex(id) {
+async function showIndex() {
     const settings = getSettings()
 
     const altcoins = await getAltcoins(settings.altcoinsCheckDate, settings.altcoinsCount)
@@ -18,6 +18,16 @@ async function showIndex(id) {
     )
 }
 
-function altcoinIndex(id) {
-    showForm(id, showIndex)
+async function altcoinIndex(id) {
+    try {
+        document.getElementById("show-altcoin-index").setAttribute("disabled", "")
+        document.getElementById("altcoin-index-loader").style.display = "block"
+
+        await showIndex()
+    } catch (ex) {
+        console.error(ex)
+    }
+
+    document.getElementById("show-altcoin-index").removeAttribute("disabled")
+    document.getElementById("altcoin-index-loader").style.display = "none"
 }
