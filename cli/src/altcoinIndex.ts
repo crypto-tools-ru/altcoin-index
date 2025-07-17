@@ -12,6 +12,7 @@ async function build(start: number, altcoinsCount: number): Promise<Symbol[]> {
 
     const symbols = Enumerable.from(await bybit.getSymbols())
         .where(x => x.symbol !== "BTCUSDT")
+        .where(x => x.symbol !== "STETHUSDT")
         .orderByDescending(x => x.turnover24h)
         .toArray()
 

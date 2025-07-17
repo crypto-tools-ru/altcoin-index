@@ -5,7 +5,10 @@ async function getAltcoins(start, altcoinsCount) {
 
     const altcoins = []
 
-    const symbols = (await getSymbols()).filter(x => x.symbol !== "BTCUSDT")
+    const symbols = (await getSymbols())
+        .filter(x => x.symbol !== "BTCUSDT")
+        .filter(x => x.symbol !== "STETHUSDT")
+
     orderByDescending(symbols, x => x.turnover24h)
 
     for (let i = 0; i < symbols.length; i++) {
