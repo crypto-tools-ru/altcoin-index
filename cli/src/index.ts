@@ -4,6 +4,7 @@ import { trader } from "./trader"
 import { pricesCalculator } from "./pricesCalculator"
 import { settings as settingsProvider, Settings } from "./settings"
 import { telegram } from "./telegram"
+import { scheduler } from "./scheduler"
 
 async function buildIndex(settings: Settings) {
     if (altcoinIndex.tryRead()) {
@@ -57,9 +58,7 @@ async function trackPrice(settings: Settings) {
         }
     }
 
-    const intervalMs = settings.trackPriceIntervalHours * 60 * 60 * 1000
-    setInterval(() => innerTrackPrice(), intervalMs)
-    await innerTrackPrice()
+    await scheduler.work(innerTrackPrice, ...settings.trackPriceIntervalHours)
 }
 
 async function main() {
