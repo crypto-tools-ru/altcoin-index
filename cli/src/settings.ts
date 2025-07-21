@@ -31,7 +31,7 @@ function get(): Settings {
             .split(",")
             .map(x => x.trim())
             .filter(x => !!x)
-            .map(parseInt),
+            .map(x => parseInt(x)),
 
         buyBudget: parseInt(process.env.buyBudget!),
         buyMargin: parseInt(process.env.buyMargin!),
